@@ -1,0 +1,35 @@
+{
+  "name": "angular-helpers",
+  "version": "0.0.0",
+  "authors": [
+    "deepakshrma <deepak.m.shrma@gmail.com>"
+  ],
+  "description": "angular-helpers, ngHelpers is collection of services, factories and directives which will help you in you basic operations",
+  "main": "./angular-helpers.js",
+  "moduleType": [
+    "es6",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "angular",
+    "helpers",
+    "validation",
+    "AngularJs",
+    "services",
+    "providers",
+    "angular-helpers"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+      "angular": "~1.2.0"
+    },
+    "devDependencies": {}
+}
