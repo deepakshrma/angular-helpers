@@ -1,6 +1,14 @@
 /**
- * Created by deepak on 7/4/15.
+ * Deepak Vishwakarma
+ *
+ * Deepak Vishwakarma <http://github.com/deepakshrma>
+ * Created and maintained by Deepak Vishwakarma
+ * on 7/4/15
+ *
+ * Copyright (c) 2015 Deepak Vishwakarma.
+ * Licensed under the MIT License (MIT).
  */
+
 // 1. define the module and the other module dependencies (if any)
 angular.module('ngHelpers', [])
     .constant('MODULE_VERSION', '0.0.1')
