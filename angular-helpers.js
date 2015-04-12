@@ -11,11 +11,52 @@
 
 // 1. define the module and the other module dependencies (if any)
 angular.module('ngHelpers', [])
-    .constant('MODULE_VERSION', '0.0.1')
-    .factory('_', function () {
-        return window._; // assumes underscore has already been loaded on the page
+    .constant('MODULE_VERSION', '0.0.8')
+    .factory('lodash', function () {
+        return window._; // assumes lodash has already been loaded on the page
     })
-    .directive('validNumber', ['_', function (_) {
+    .factory('helpers', function () {
+        // Usage... for a nested structure
+        // var test = {
+        //    nested: {
+        //      value: 'Read Correctly'
+        //   }
+        // };
+        // safeRead(test, 'nested', 'value');  // returns 'Read Correctly'
+        // safeRead(test, 'missing', 'value'); // returns ''
+        //
+        // http://thecodeabode.blogspot.com.au/2013/04/javascript-safely-reading-nested.html
+        var safeRead = function () {
+            var current, obj, prop, props, val, _i, _len, read;
+
+            obj = arguments[0];
+            props = (2 <= arguments.length) ? [].slice.call(arguments, 1) : [];
+
+            read = function (obj, prop) {
+                if ((obj !== null ? obj[prop] : void 0) === null) {
+                    return;
+                }
+                return obj[prop];
+            };
+
+            current = obj;
+            for (_i = 0, _len = props.length; _i < _len; _i++) {
+                prop = props[_i];
+
+                val = read(current, prop);
+                if (val) {
+                    current = val;
+                } else {
+                    return '';
+                }
+            }
+            return current;
+        };
+        return {
+            safeRead: safeRead
+        };
+    })
+    .directive('validNumber', ['lodash', function (_) {
         return {
             // restrict to an attribute type.
             restrict: 'A',
