@@ -11,7 +11,7 @@
 
 // 1. define the module and the other module dependencies (if any)
 angular.module('ngHelpers', [])
-    .constant('MODULE_VERSION', '0.0.8')
+    .constant('MODULE_VERSION', '0.0.9')
     .factory('lodash', function () {
         return window._; // assumes lodash has already been loaded on the page
     })
@@ -89,6 +89,78 @@ angular.module('ngHelpers', [])
                 ctrl.$formatters.unshift(validator);
             }
         };
+    }])
+    //how to use directive
+    // <a class="link" file-downloader generate="generatePdfLink()" status="status" timeout="2000">
+    // <span class="print-blue">&nbsp;</span>SKRIV UT
+    // </a>
+    // #######################OR###########################
+    // <a class="link" file-downloader url="static/url/file.ext" status="status" timeout="2000">
+    // <span class="print-blue">&nbsp;</span>SKRIV UT
+    // </a>
+    // #######################OR###########################
+    // <a class="link" file-downloader urlmodel="yourmodel" status="status" timeout="2000">
+    // <span class="print-blue">&nbsp;</span>SKRIV UT
+    // </a>
+    // #######################OR###########################
+    .directive('fileDownloader', ['$http', '$q', function ($http, $q) {
+        var _getFile = function (url) {
+            var deferred = $q.defer();
+            $http.get(url)
+                .then(function (result) {
+                    // Successful
+                    deferred.resolve(result);
+                },
+                function (error) {
+                    // Error
+                    deferred.reject(error);
+                });
+            return deferred.promise;
+        };
+        var directive = {};
+        directive.restrict = 'A';
+        directive.scope = {
+            urlmodel: "=",
+            url: "@url",
+            generate: "&",
+            status: "="
+        };
+        directive.controller = ['$scope', '$window', '$timeout', function (that, $window, $timeout) {
+            var getUrl = that.urlmodel || that.url || that.generate;
+            var _status;
+            that.download = function () {
+                if (that.status)
+                    return;
+                var url = typeof getUrl == 'function' ? getUrl() : getUrl;
+                if (url) {
+                    _status = 'Loading'
+                    that.status = _status;
+                    var promise = _getFile(url);
+                    promise.then(function (result) {
+                        _status = 'Loaded';
+                        $window.open(url, '_self', '');
+                    }, function (error) {
+                        _status = 'Failed';
+                        console.log(error.data)
+                    });
+                    promise.finally(function () {
+                        that.status = _status;
+                        $timeout(function () {
+                            _status = '';
+                            that.status = '';
+                        }, that.timeout);
+                    });
+                } else {
+                    _status = '';
+                    that.status = _status;
+                }
+            };
+        }];
+        directive.link = function (that, iElement, iAttrs, ctrl) {
+            if (iAttrs.timeout)
+                that.timeout = isNaN(Number(iAttrs.timeout)) ? 2000 : Number(iAttrs.timeout);
+            iElement.on('click', that.download)
+        }
+        return directive;
     }]);
-;
 // and so on
