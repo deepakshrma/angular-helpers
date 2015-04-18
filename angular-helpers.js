@@ -91,6 +91,66 @@ angular.module('ngHelpers', [])
         };
     }])
     //how to use directive
+    /* <input type="text" name="amount" required data-ng-model="ctrl.amount"
+    custom-validate func="ctrl.functionTovalidate validator-name="errorIdToSetInForm">
+    ###########################################################################################
+     <span custom-validate func="list.unitIdValidator" validator-name="isUnitValid" data-ng-model="list.selectedUnit">
+     {{ (list.selectedUnit && list.selectedUnit.name) || ('shoppingList.selectAUnit' | translate)}}</span>
+     */
+    /*
+    *My own custom validator function
+     *  self.numberValidator = function (value) {
+                var minRange = 1, regex = /^-?\d*(\.\d+)?$/;
+                var isValid = regex.test(value);
+                    if (isValid && minRange) {
+                        isValid = Number(minRange) <= Number(value);
+                    }
+                return isValid;
+                };
+       self.unitIdValidator = function (unit) {
+            return (unit && unit.id) ? true : false;
+        };
+    * */
+    .directive('customValidate', ['$parse', function ($parse) {
+        // Return the directive configuration. Notice that we are requiring the
+        // ngModel controller to be passed into our linking function.
+        return ({
+            link: link,
+            require: "ngModel",
+            scope: {
+                func: "&"
+            },
+            restrict: "A"
+        });
+// I bind the JavaScript events to the local scope.
+        function link(that, element, attributes, ngModelController) {
+            // Validate directive attributes.
+            if (!attributes.func) {
+                throw( new Error("customValidate requires func to validate.") );
+            }
+            // Validate directive attributes.
+            if (!attributes.validatorName) {
+                throw( new Error("customValidate requires validator-name to set form validation error") );
+            }
+            var func = that.func() || function () {
+                    return true;
+                };
+            // add a parser that will process each time the value is
+            // parsed into the model when the user updates it.
+            ngModelController.$parsers.unshift(function (value) {
+                ngModelController.$setValidity(attributes.validator, func(value));
+                return value;
+            });
+            // add a formatter that will process each time the value
+            // is updated on the DOM element.
+            ngModelController.$formatters.unshift(function (value) {
+                ngModelController.$setValidity(attributes.validator, func(value));
+                return value;
+            });
+        }
+
+    }])
+    //how to use directive
     // <a class="link" file-downloader generate="generatePdfLink()" status="status" timeout="2000">
     // <span class="print-blue">&nbsp;</span>SKRIV UT
     // </a>
