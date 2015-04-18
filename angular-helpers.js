@@ -11,7 +11,7 @@
 
 // 1. define the module and the other module dependencies (if any)
 angular.module('ngHelpers', [])
-    .constant('MODULE_VERSION', '0.0.9')
+    .constant('MODULE_VERSION', '0.1.0')
     .factory('lodash', function () {
         return window._; // assumes lodash has already been loaded on the page
     })
