@@ -66,27 +66,29 @@ angular.module('ngHelpers', [])
             // elem = the element the directive is on
             // attr = a dictionary of attributes on the element
             // ctrl = the controller for ngModel.
-            link: function (scope, elm, attrs, ctrl) {
+            link: function (that, element, attributes, ngModelController) {
                 var regex = /^-?\d*(\.\d+)?$/;
-                var minRange = attrs.minRange;
-                var maxRange = attrs.maxRange;
+                var minRange = attributes.minRange;
+                var maxRange = attributes.maxRange;
                 var validator = function (value) {
-                    var isValid = regex.test(value);
-                    if (isValid && minRange) {
-                        isValid = Number(minRange) <= Number(value);
+                    if (attributes.novalidate != 'true'){
+                        var isValid = regex.test(value);
+                        if (isValid && minRange) {
+                            isValid = Number(minRange) <= Number(value);
+                        }
+                        if (isValid && maxRange) {
+                            isValid = Number(value) <= Number(maxRange);
+                        }
+                        ngModelController.$setValidity('validNumber', isValid);
                     }
-                    if (isValid && maxRange) {
-                        isValid = Number(value) <= Number(maxRange);
-                    }
-                    ctrl.$setValidity('validNumber', isValid);
-                    return value;
+                   return value;
                 };
                 // add a parser that will process each time the value is
                 // parsed into the model when the user updates it.
-                ctrl.$parsers.unshift(validator);
+                ngModelController.$parsers.unshift(validator);
                 // add a formatter that will process each time the value
                 // is updated on the DOM element.
-                ctrl.$formatters.unshift(validator);
+                ngModelController.$formatters.unshift(validator);
             }
         };
     }])
@@ -138,17 +140,18 @@ angular.module('ngHelpers', [])
             // add a parser that will process each time the value is
             // parsed into the model when the user updates it.
             ngModelController.$parsers.unshift(function (value) {
-                ngModelController.$setValidity(attributes.validator, func(value));
+                if (attributes.novalidate != 'true')
+                    ngModelController.$setValidity(attributes.validatorName, func(value));
                 return value;
             });
             // add a formatter that will process each time the value
             // is updated on the DOM element.
             ngModelController.$formatters.unshift(function (value) {
-                ngModelController.$setValidity(attributes.validator, func(value));
+                if (attributes.novalidate != 'true')
+                    ngModelController.$setValidity(attributes.validatorName, func(value));
                 return value;
             });
         }
-
     }])
     //how to use directive
     // <a class="link" file-downloader generate="generatePdfLink()" status="status" timeout="2000">
