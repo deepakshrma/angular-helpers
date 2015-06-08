@@ -11,7 +11,7 @@
 
 // 1. define the module and the other module dependencies (if any)
 angular.module('ngHelpers', [])
-    .constant('MODULE_VERSION', '0.1.1')
+    .constant('MODULE_VERSION', '0.1.2')
     .factory('lodash', function () {
         return window._; // assumes lodash has already been loaded on the page
     })
@@ -226,18 +226,37 @@ angular.module('ngHelpers', [])
         }
         return directive;
     }])
+
+    //how to use directive
+    // Including bxslider, jquery plugin
+    //#########################__###########################
+    // <script src="/jquery.bxslider.min.js"></script>
+    // Including jqueryLoader directive to your html
+    // <ul class="bxslider" jquery-loader="" func="bxSlider" options="::options">
+    //      <li><img src="/tree_root.jpg" title="Funky roots"/></li>
+    //      <li><img src="/hill_road.jpg" title="The long and winding road"/></li>
+    //      <li><img src="/trees.jpg" title="Happy trees"/></li>
+    //</ul>
+    //#########################__##########################
+    // pass options from controller if require.
+    // #######################__###########################
+    //$scope.options = {
+    // auto: true,
+    // autoControls: true
+    // };
+    // #######################__###########################
     .directive('jqueryLoader', function ($timeout) {
         return {
             restrict: 'A',
-            scope:{
-                options:'=options'
+            scope: {
+                options: '='
             },
             link: function (scope, elem, attrs) {
                 var timeout = attrs.timeout || 0;
                 var funcName = attrs.func;
-                var options = scope.options || {};
+                var options = scope.options;
                 $timeout(function () {
-                    $(elem)[funcName] && $(elem)[funcName](options);
+                    jQuery(elem)[funcName] && (options ? jQuery(elem)[funcName](options) : jQuery(elem)[funcName]());
                 }, timeout)
             }
         }
