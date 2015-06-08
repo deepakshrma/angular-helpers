@@ -71,7 +71,7 @@ angular.module('ngHelpers', [])
                 var minRange = attributes.minRange;
                 var maxRange = attributes.maxRange;
                 var validator = function (value) {
-                    if (attributes.novalidate != 'true'){
+                    if (attributes.novalidate != 'true') {
                         var isValid = regex.test(value);
                         if (isValid && minRange) {
                             isValid = Number(minRange) <= Number(value);
@@ -81,7 +81,7 @@ angular.module('ngHelpers', [])
                         }
                         ngModelController.$setValidity('validNumber', isValid);
                     }
-                   return value;
+                    return value;
                 };
                 // add a parser that will process each time the value is
                 // parsed into the model when the user updates it.
@@ -94,25 +94,25 @@ angular.module('ngHelpers', [])
     }])
     //how to use directive
     /* <input type="text" name="amount" required data-ng-model="ctrl.amount"
-    custom-validate func="ctrl.functionTovalidate validator-name="errorIdToSetInForm">
-    ###########################################################################################
+     custom-validate func="ctrl.functionTovalidate validator-name="errorIdToSetInForm">
+     ###########################################################################################
      <span custom-validate func="list.unitIdValidator" validator-name="isUnitValid" data-ng-model="list.selectedUnit">
      {{ (list.selectedUnit && list.selectedUnit.name) || ('shoppingList.selectAUnit' | translate)}}</span>
      */
     /*
-    *My own custom validator function
+     *My own custom validator function
      *  self.numberValidator = function (value) {
-                var minRange = 1, regex = /^-?\d*(\.\d+)?$/;
-                var isValid = regex.test(value);
-                    if (isValid && minRange) {
-                        isValid = Number(minRange) <= Number(value);
-                    }
-                return isValid;
-                };
-       self.unitIdValidator = function (unit) {
-            return (unit && unit.id) ? true : false;
-        };
-    * */
+     var minRange = 1, regex = /^-?\d*(\.\d+)?$/;
+     var isValid = regex.test(value);
+     if (isValid && minRange) {
+     isValid = Number(minRange) <= Number(value);
+     }
+     return isValid;
+     };
+     self.unitIdValidator = function (unit) {
+     return (unit && unit.id) ? true : false;
+     };
+     * */
     .directive('customValidate', ['$parse', function ($parse) {
         // Return the directive configuration. Notice that we are requiring the
         // ngModel controller to be passed into our linking function.
@@ -225,5 +225,21 @@ angular.module('ngHelpers', [])
             iElement.on('click', that.download)
         }
         return directive;
-    }]);
+    }])
+    .directive('jqueryLoader', function ($timeout) {
+        return {
+            restrict: 'A',
+            scope:{
+                options:'=options'
+            },
+            link: function (scope, elem, attrs) {
+                var timeout = attrs.timeout || 0;
+                var funcName = attrs.func;
+                var options = scope.options || {};
+                $timeout(function () {
+                    $(elem)[funcName] && $(elem)[funcName](options);
+                }, timeout)
+            }
+        }
+    });
 // and so on
